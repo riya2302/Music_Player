@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Music Player</title>
+    <script src="https://kit.fontawesome.com/a95e35f486.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="music_player">
+            <nav>
+                <div class="circle" onclick="like()" id="like">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                <div class="circle">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+            </nav>
+            <img src="media/girl-music.png" class="song-img" id="song-img">
+            <h1 id="song-title">Mere Dholna</h1>
+            <p id="song-artist">Riya Kothari</p>
+
+            <audio id="song">
+                <source id="song-source" src="media/mere dholna sun by riya.mp3" type="audio/mpeg" >
+            </audio>
+            <input type="range" value="0" id="progress">
+
+            <div class="controls">
+                <div onclick="playPrevious()"><i class="fa-solid fa-backward"></i></div>
+                <div onclick="playPause()"><i class="fa-solid fa-play" id="ctrlIcon"></i></div>
+                <div onclick="playNext()"><i class="fa-solid fa-forward"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let progress = document.getElementById("progress");
+        let song = document.getElementById("song");
+        let ctrlIcon = document.getElementById("ctrlIcon");
+        let songSource = document.getElementById("song-source");
+        let songTitle = document.getElementById("song-title");
+        let songArtist = document.getElementById("song-artist");
+        let songImg = document.getElementById("song-img");
+        let liked = document.querySelector(".circle");
+
+        let playlist = [
+            {
+                title: "Mere Dholna",
+                artist: "Riya Kothari",
+                src: "media/mere dholna sun by riya.mp3",
+                img: "media/mere dholna.png"
+            },
+            {
+                title: "Dekho maine dekha hai yeh",
+                artist: "Riya Kothari and Vijay Pathak",
+                src: "media/dekho maine dekha hai ye by riya.mp3",
+                img: "media/dekho maine.jpg"
+            },
+            {
+                title: "Mere Khwabon mein",
+                artist: "Riya Kothari",
+                src: "media/mere khwabon.mp3",
+                img: "media/ddlj1.jpg"
+            },
+            {
+                title: "Patjhad Saawan",
+                artist: "Riya Kothari and Lokesh Nirwel",
+                src: "media/patjhad saawan.mp3",
+                img: "media/patjhad saawan.jpg"
+            },
+            {
+                title: "Palkhi mein hoke sawaar",
+                artist: "Riya Kothari",
+                src: "media/Palkhi mein hoke.mp3",
+                img: "media/palkhi me.jpg"
+            },
+            {
+                title: "Sagar Kinare",
+                artist: "Riya Kothari and Lokesh Nirwel",
+                src: "media/saagar kinare.mp3",
+                img: "media/sagar kinare dil.jpg"
+            },
+            {
+                title: "Yeh Waqt Na",
+                artist: "Riya Kothari and Lokesh Nirwel",
+                src: "media/yeh waqt na kho jaye.mp3",
+                img: "media/yeh waqt na.jpg"
+            },
+            {
+                title: "Happy Birthday To Me (23rd-may)",
+                artist: "Masha",
+                src: "media/masha birthday.mp3",
+                img: "media/masha.jpg"
+            }
+        ];
+
+        let currentSongIndex = 0;
+
+        function loadSong(index){
+            let songData = playlist[index];
+            songSource.src = songData.src;
+            songTitle.textContent = songData.title;
+            songArtist.textContent = songData.artist;
+            songImg.src = songData.img;
+            song.load();
+            song.onloadedmetadata = () => {
+                progress.max = song.duration;
+                progress.value = song.currentTime;
+            };
+        }
+
+        // song.onloadedmetadata = function(){
+        //     progress.max = song.duration;
+        //     progress.value = song.currentTime;
+        // }
+
+        function playPause(){
+            if(ctrlIcon.classList.contains("fa-pause")){
+                song.pause();
+                ctrlIcon.classList.remove("fa-pause");
+                ctrlIcon.classList.add("fa-play");
+            }
+            else{
+                song.play();
+                ctrlIcon.classList.remove("fa-play");
+                ctrlIcon.classList.add("fa-pause");
+            }
+        }
+
+        song.addEventListener('play', () => {
+            ctrlIcon.classList.remove("fa-play");
+            ctrlIcon.classList.add("fa-pause");
+        });
+
+        song.addEventListener('pause', () => {
+            ctrlIcon.classList.remove("fa-pause");
+            ctrlIcon.classList.add("fa-play");
+        });
+
+        song.addEventListener('ended', playNext);
+
+        function updateProgress() {
+            setInterval(() => {
+                if (!song.paused) {
+                    progress.value = song.currentTime;
+                }
+            }, 500);
+        }
+
+        progress.onchange = function(){
+            song.play();
+            song.currentTime = progress.value;
+            if (song.paused) {
+                song.play();
+            }
+        }
+
+        function playNext(){
+            currentSongIndex = (currentSongIndex + 1) % playlist.length;
+            loadSong(currentSongIndex);
+            song.play();
+        }
+        function playPrevious(){
+            currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
+            loadSong(currentSongIndex);
+            song.play();
+        }
+        let num = 0;
+        function like(){
+            if(num==0){
+                liked.style.color = "red";
+                num++;
+            }
+            else{
+                liked.style.color = "black";
+                num = 0;
+            }
+        }
+        loadSong(currentSongIndex);
+        updateProgress();
+
+    </script>
+</body>
+</html>
